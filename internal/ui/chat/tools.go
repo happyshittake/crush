@@ -624,10 +624,9 @@ func toolOutputCodeContent(sty *styles.Styles, path, content string, offset, wid
 
 	// Add truncation message if needed.
 	if len(lines) > maxLines && !expanded {
-		out = append(
-			out, sty.Tool.ContentCodeTruncation.
-				Width(width).
-				Render(fmt.Sprintf(assistantMessageTruncateFormat, len(lines)-maxLines)),
+		out = append(out, sty.Tool.ContentCodeTruncation.
+			Width(width).
+			Render(fmt.Sprintf(assistantMessageTruncateFormat, len(lines)-maxLines)),
 		)
 	}
 
@@ -786,8 +785,7 @@ func renderHookLine(sty *styles.Styles, hi hooks.HookInfo, rawName, detail strin
 		arrowStyle = sty.Tool.HookDeniedLabel
 	}
 
-	return fmt.Sprintf(
-		"%s %s%s%s %s %s",
+	return fmt.Sprintf("%s %s%s%s %s %s",
 		labelStyle.Render("Hook"),
 		name,
 		namePad,
@@ -996,10 +994,9 @@ func toolOutputMarkdownContent(sty *styles.Styles, content string, width int, ex
 	}
 
 	if len(lines) > maxLines && !expanded {
-		out = append(
-			out, sty.Tool.ContentTruncation.
-				Width(width).
-				Render(fmt.Sprintf(assistantMessageTruncateFormat, len(lines)-maxLines)),
+		out = append(out, sty.Tool.ContentTruncation.
+			Width(width).
+			Render(fmt.Sprintf(assistantMessageTruncateFormat, len(lines)-maxLines)),
 		)
 	}
 

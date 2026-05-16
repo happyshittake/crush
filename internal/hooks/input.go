@@ -53,8 +53,7 @@ func BuildPayload(eventName, sessionID, cwd, toolName, toolInputJSON string) []b
 func BuildEnv(eventName, toolName, sessionID, cwd, projectDir, toolInputJSON string) []string {
 	env := os.Environ()
 	env = append(env, shell.CrushEnvMarkers()...)
-	env = append(
-		env,
+	env = append(env,
 		fmt.Sprintf("CRUSH_EVENT=%s", eventName),
 		fmt.Sprintf("CRUSH_TOOL_NAME=%s", toolName),
 		fmt.Sprintf("CRUSH_SESSION_ID=%s", sessionID),
@@ -106,8 +105,7 @@ func parseStdout(stdout string) HookResult {
 	}
 
 	if parsed.Version > SupportedOutputVersion {
-		slog.Debug(
-			"Hook output declared a newer envelope version than this build supports",
+		slog.Debug("Hook output declared a newer envelope version than this build supports",
 			"version", parsed.Version,
 			"supported", SupportedOutputVersion,
 		)

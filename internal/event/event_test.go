@@ -54,8 +54,7 @@ func TestError(t *testing.T) {
 		}()
 
 		client = nil
-		Error(
-			"test error",
+		Error("test error",
 			"type", "test",
 			"severity", "high",
 			"source", "unit-test",

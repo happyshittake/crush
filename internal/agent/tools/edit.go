@@ -104,8 +104,7 @@ func NewEditTool(
 			text += getDiagnostics(params.FilePath, lspManager)
 			response.Content = text
 			return response, nil
-		},
-	)
+		})
 }
 
 func createNewFile(edit editContext, filePath, content string, call fantasy.ToolCall) (fantasy.ToolResponse, error) {
@@ -134,8 +133,7 @@ func createNewFile(edit editContext, filePath, content string, call fantasy.Tool
 		content,
 		strings.TrimPrefix(filePath, edit.workingDir),
 	)
-	p, err := edit.permissions.Request(
-		edit.ctx,
+	p, err := edit.permissions.Request(edit.ctx,
 		permission.CreatePermissionRequest{
 			SessionID:   sessionID,
 			Path:        fsext.PathOrPrefix(filePath, edit.workingDir),
@@ -215,11 +213,9 @@ func deleteContent(edit editContext, filePath, oldString string, replaceAll bool
 	modTime := fileInfo.ModTime().Truncate(time.Second)
 	if modTime.After(lastRead) {
 		return fantasy.NewTextErrorResponse(
-			fmt.Sprintf(
-				"file %s has been modified since it was last read (mod time: %s, last read: %s)",
+			fmt.Sprintf("file %s has been modified since it was last read (mod time: %s, last read: %s)",
 				filePath, modTime.Format(time.RFC3339), lastRead.Format(time.RFC3339),
-			),
-		), nil
+			)), nil
 	}
 
 	content, err := os.ReadFile(filePath)
@@ -256,8 +252,7 @@ func deleteContent(edit editContext, filePath, oldString string, replaceAll bool
 		strings.TrimPrefix(filePath, edit.workingDir),
 	)
 
-	p, err := edit.permissions.Request(
-		edit.ctx,
+	p, err := edit.permissions.Request(edit.ctx,
 		permission.CreatePermissionRequest{
 			SessionID:   sessionID,
 			Path:        fsext.PathOrPrefix(filePath, edit.workingDir),
@@ -349,11 +344,9 @@ func replaceContent(edit editContext, filePath, oldString, newString string, rep
 	modTime := fileInfo.ModTime().Truncate(time.Second)
 	if modTime.After(lastRead) {
 		return fantasy.NewTextErrorResponse(
-			fmt.Sprintf(
-				"file %s has been modified since it was last read (mod time: %s, last read: %s)",
+			fmt.Sprintf("file %s has been modified since it was last read (mod time: %s, last read: %s)",
 				filePath, modTime.Format(time.RFC3339), lastRead.Format(time.RFC3339),
-			),
-		), nil
+			)), nil
 	}
 
 	content, err := os.ReadFile(filePath)
@@ -390,8 +383,7 @@ func replaceContent(edit editContext, filePath, oldString, newString string, rep
 		strings.TrimPrefix(filePath, edit.workingDir),
 	)
 
-	p, err := edit.permissions.Request(
-		edit.ctx,
+	p, err := edit.permissions.Request(edit.ctx,
 		permission.CreatePermissionRequest{
 			SessionID:   sessionID,
 			Path:        fsext.PathOrPrefix(filePath, edit.workingDir),
@@ -453,6 +445,5 @@ func replaceContent(edit editContext, filePath, oldString, newString string, rep
 			NewContent: newContent,
 			Additions:  additions,
 			Removals:   removals,
-		},
-	), nil
+		}), nil
 }

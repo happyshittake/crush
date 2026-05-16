@@ -102,8 +102,7 @@ func NewLsTool(permissions permission.Service, workingDir string, lsConfig confi
 					return fantasy.ToolResponse{}, fmt.Errorf("session ID is required for accessing directories outside working directory")
 				}
 
-				granted, err := permissions.Request(
-					ctx,
+				granted, err := permissions.Request(ctx,
 					permission.CreatePermissionRequest{
 						SessionID:   sessionID,
 						Path:        absSearchPath,
@@ -131,8 +130,7 @@ func NewLsTool(permissions permission.Service, workingDir string, lsConfig confi
 				fantasy.NewTextResponse(output),
 				metadata,
 			), nil
-		},
-	)
+		})
 }
 
 func ListDirectoryTree(searchPath string, params LSParams, lsConfig config.ToolLs) (string, LSResponseMetadata, error) {

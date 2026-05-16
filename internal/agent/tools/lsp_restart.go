@@ -75,6 +75,5 @@ func NewLSPRestartTool(lspManager *lsp.Manager) fantasy.AgentTool {
 			}
 
 			return fantasy.NewTextResponse(output), nil
-		},
-	)
+		})
 }

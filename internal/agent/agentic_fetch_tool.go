@@ -80,8 +80,7 @@ func (c *coordinator) agenticFetchTool(_ context.Context, client *http.Client) (
 				description = "Search the web and analyze results"
 			}
 
-			p, err := c.permissions.Request(
-				ctx,
+			p, err := c.permissions.Request(ctx,
 				permission.CreatePermissionRequest{
 					SessionID:   validationResult.SessionID,
 					Path:        c.cfg.WorkingDir(),
@@ -201,6 +200,5 @@ func (c *coordinator) agenticFetchTool(_ context.Context, client *http.Client) (
 					c.permissions.AutoApproveSession(sessionID)
 				},
 			})
-		},
-	), nil
+		}), nil
 }

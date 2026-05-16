@@ -75,6 +75,5 @@ func NewWebFetchTool(workingDir string, client *http.Client) fantasy.AgentTool {
 			}
 
 			return fantasy.NewTextResponse(result.String()), nil
-		},
-	)
+		})
 }

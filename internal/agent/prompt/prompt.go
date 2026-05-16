@@ -29,15 +29,15 @@ type Prompt struct {
 }
 
 type PromptDat struct {
-	Provider             string
-	Model                string
-	Config               config.Config
-	WorkingDir           string
-	IsGitRepo            bool
-	Platform             string
-	Date                 string
-	GitStatus            string
-	ContextFiles         []ContextFile
+	Provider      string
+	Model         string
+	Config        config.Config
+	WorkingDir    string
+	IsGitRepo     bool
+	Platform      string
+	Date          string
+	GitStatus     string
+	ContextFiles  []ContextFile
 	AvailSkillXML        string
 	SuperpowersBootstrap string
 }

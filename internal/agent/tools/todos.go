@@ -130,6 +130,5 @@ func NewTodosTool(sessions session.Service) fantasy.AgentTool {
 			}
 
 			return fantasy.WithResponseMetadata(fantasy.NewTextResponse(response), metadata), nil
-		},
-	)
+		})
 }
