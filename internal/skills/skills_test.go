@@ -523,6 +523,48 @@ func TestDeduplicate(t *testing.T) {
 	}
 }
 
+func TestDeduplicateThreeTier(t *testing.T) {
+	t.Parallel()
+
+	// Simulate three-tier discovery: builtin -> superpowers -> user.
+	input := []*Skill{
+		{Name: "shared-skill", Path: "crush://skills/shared-skill", Builtin: true},
+		{Name: "shared-skill", Path: "crush://superpowers/shared-skill", Vendored: true},
+		{Name: "shared-skill", Path: "/user/shared-skill"},
+		{Name: "builtin-only", Path: "crush://skills/builtin-only", Builtin: true},
+		{Name: "superpowers-only", Path: "crush://superpowers/superpowers-only", Vendored: true},
+	}
+
+	result := Deduplicate(input)
+	require.Len(t, result, 3)
+
+	// User wins for shared-skill.
+	var shared, builtinOnly, superpowersOnly *Skill
+	for _, s := range result {
+		switch s.Name {
+		case "shared-skill":
+			shared = s
+		case "builtin-only":
+			builtinOnly = s
+		case "superpowers-only":
+			superpowersOnly = s
+		}
+	}
+
+	require.NotNil(t, shared)
+	require.Equal(t, "/user/shared-skill", shared.Path)
+	require.False(t, shared.Builtin)
+	require.False(t, shared.Vendored)
+
+	require.NotNil(t, builtinOnly)
+	require.Equal(t, "crush://skills/builtin-only", builtinOnly.Path)
+	require.True(t, builtinOnly.Builtin)
+
+	require.NotNil(t, superpowersOnly)
+	require.Equal(t, "crush://superpowers/superpowers-only", superpowersOnly.Path)
+	require.True(t, superpowersOnly.Vendored)
+}
+
 func TestFilter(t *testing.T) {
 	t.Parallel()
 
