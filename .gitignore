@@ -52,5 +52,7 @@ Thumbs.db
 
 manpages/
 completions/crush.*sh
+.opencode/
+
 .prettierignore
 .task
