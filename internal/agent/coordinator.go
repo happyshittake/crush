@@ -1132,13 +1132,12 @@ func (c *coordinator) updateParentSessionCost(ctx context.Context, childSessionI
 	return nil
 }
 
-// discoverSkills runs the skill discovery pipeline and returns both the
-// pre-filter (all discovered, after dedup) and post-filter (active) lists.
-// It also emits a single diagnostic log line summarising the outcome to
-// help track skill-loading health over time.
 func discoverSkills(cfg *config.ConfigStore) (allSkills, activeSkills []*skills.Skill) {
 	builtin, builtinStates := skills.DiscoverBuiltinWithStates()
 	discovered := append([]*skills.Skill(nil), builtin...)
+
+	superpowers, superpowersStates := skills.DiscoverSuperpowersWithStates()
+	discovered = append(discovered, superpowers...)
 
 	var userStates []*skills.SkillState
 	var userPaths []string
@@ -1168,6 +1167,7 @@ func discoverSkills(cfg *config.ConfigStore) (allSkills, activeSkills []*skills.
 	activeSkills = skills.Filter(allSkills, disabledSkills)
 
 	allStates := append([]*skills.SkillState(nil), builtinStates...)
+	allStates = append(allStates, superpowersStates...)
 	allStates = append(allStates, userStates...)
 
 	allStates = skills.DeduplicateStates(allStates)
