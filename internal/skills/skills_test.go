@@ -451,6 +451,36 @@ func TestDiscoverBuiltin(t *testing.T) {
 	require.True(t, foundHooks, "crush-hooks builtin skill not found")
 }
 
+func TestDiscoverSuperpowers(t *testing.T) {
+	t.Parallel()
+
+	discovered := DiscoverSuperpowers()
+	require.NotEmpty(t, discovered)
+
+	// Check that all discovered skills have correct properties.
+	for _, s := range discovered {
+		require.True(t, strings.HasPrefix(s.SkillFilePath, SuperpowersPrefix),
+			"skill %q: expected SkillFilePath to start with %q, got %q", s.Name, SuperpowersPrefix, s.SkillFilePath)
+		require.True(t, strings.HasPrefix(s.Path, SuperpowersPrefix),
+			"skill %q: expected Path to start with %q, got %q", s.Name, SuperpowersPrefix, s.Path)
+		require.False(t, s.Builtin, "skill %q: Vendored skills should not be Builtin", s.Name)
+		require.True(t, s.Vendored, "skill %q: Vendored skills should have Vendored=true", s.Name)
+		require.NotEmpty(t, s.Description, "skill %q: Description should not be empty", s.Name)
+		require.NotEmpty(t, s.Instructions, "skill %q: Instructions should not be empty", s.Name)
+	}
+
+	// Verify at least one well-known superpowers skill is present.
+	var foundBrainstorming bool
+	for _, s := range discovered {
+		if s.Name == "brainstorming" {
+			foundBrainstorming = true
+			require.Equal(t, "crush://superpowers/brainstorming/SKILL.md", s.SkillFilePath)
+			require.Equal(t, "crush://superpowers/brainstorming", s.Path)
+		}
+	}
+	require.True(t, foundBrainstorming, "brainstorming superpowers skill not found")
+}
+
 func TestDeduplicate(t *testing.T) {
 	t.Parallel()
 
