@@ -38,7 +38,8 @@ type PromptDat struct {
 	Date          string
 	GitStatus     string
 	ContextFiles  []ContextFile
-	AvailSkillXML string
+	AvailSkillXML        string
+	SuperpowersBootstrap string
 }
 
 type ContextFile struct {
@@ -174,6 +175,15 @@ func (p *Prompt) promptData(ctx context.Context, provider, model string, store *
 		builtinNames[s.Name] = true
 	}
 
+	// Add vendored superpowers skills.
+	superpowersSkills := skills.DiscoverSuperpowers()
+	for _, spSkill := range superpowersSkills {
+		if builtinNames[spSkill.Name] {
+			slog.Warn("Superpowers skill overrides builtin skill", "name", spSkill.Name)
+		}
+		allSkills = append(allSkills, spSkill)
+	}
+
 	// Discover user skills from configured paths.
 	if len(cfg.Options.SkillsPaths) > 0 {
 		expandedPaths := make([]string, 0, len(cfg.Options.SkillsPaths))
@@ -188,26 +198,38 @@ func (p *Prompt) promptData(ctx context.Context, provider, model string, store *
 		}
 	}
 
-	// Deduplicate: user skills override builtins with the same name.
+	// Deduplicate: user > superpowers > builtin.
 	allSkills = skills.Deduplicate(allSkills)
 
 	// Filter out disabled skills.
 	allSkills = skills.Filter(allSkills, cfg.Options.DisabledSkills)
 
-	if len(allSkills) > 0 {
-		availSkillXML = skills.ToPromptXML(allSkills)
+	// Extract using-superpowers bootstrap and exclude from available skills XML.
+	var superpowersBootstrap string
+	skillsForXML := make([]*skills.Skill, 0, len(allSkills))
+	for _, s := range allSkills {
+		if s.Name == "using-superpowers" {
+			superpowersBootstrap = s.Instructions
+			continue
+		}
+		skillsForXML = append(skillsForXML, s)
+	}
+
+	if len(skillsForXML) > 0 {
+		availSkillXML = skills.ToPromptXML(skillsForXML)
 	}
 
 	isGit := isGitRepo(store.WorkingDir())
 	data := PromptDat{
-		Provider:      provider,
-		Model:         model,
-		Config:        *cfg,
-		WorkingDir:    filepath.ToSlash(workingDir),
-		IsGitRepo:     isGit,
-		Platform:      platform,
-		Date:          p.now().Format("1/2/2006"),
-		AvailSkillXML: availSkillXML,
+		Provider:             provider,
+		Model:                model,
+		Config:               *cfg,
+		WorkingDir:           filepath.ToSlash(workingDir),
+		IsGitRepo:            isGit,
+		Platform:             platform,
+		Date:                 p.now().Format("1/2/2006"),
+		AvailSkillXML:        availSkillXML,
+		SuperpowersBootstrap: superpowersBootstrap,
 	}
 	if isGit {
 		var err error
