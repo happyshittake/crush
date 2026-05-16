@@ -19,25 +19,43 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:
 
-1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority
+1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, CRUSH.md, direct requests) — highest priority
 2. **Superpowers skills** — override default system behavior where they conflict
 3. **Default system prompt** — lowest priority
 
-If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
+If CLAUDE.md, GEMINI.md, AGENTS.md, or CRUSH.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
 
 ## How to Access Skills
 
-**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
+**In Crush:** All skills in `<available_skills>` are accessible via the `view` native tool. Pass the `<location>` value exactly as shown to the `view` tool. Do NOT use `read`, MCP tools, or any other mechanism.
 
-**In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins. The `skill` tool works the same as Claude Code's `Skill` tool.
+**In Claude Code:** Use the `Skill` tool.
 
-**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
+**In Copilot CLI:** Use the `skill` tool.
 
-**In other environments:** Check your platform's documentation for how skills are loaded.
+**In Gemini CLI:** Skills activate via the `activate_skill` tool.
+
+## Tool Mapping for Crush
+
+When skills reference tools not available in Crush, substitute the following equivalents:
+
+| Superpowers Tool | Crush Equivalent |
+|-----------------|-----------------|
+| `TodoWrite` | `todowrite` |
+| `Task` tool with subagents | `task` tool with appropriate `subagent_type` |
+| `Skill` tool | `view` tool — pass the `<location>` path verbatim |
+| `Read`, `Write`, `Edit` | Native tools with same names |
+| `Bash` | Native `bash` tool |
+| `Grep` | Native `grep` tool |
+| `Glob` | Native `glob` tool |
+| `WebSearch` | Native `websearch` tool |
+| `WebFetch` | Native `webfetch` tool |
+
+Use Crush's native `view` tool to load any skill by passing its `<location>` path verbatim. The `crush://skills/` and `crush://superpowers/` prefixes are NOT URLs, network addresses, or MCP resources — they are internal identifiers the `view` tool understands natively.
 
 ## Platform Adaptation
 
-Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
+Skills use Claude Code tool names. For Crush, see the tool mapping above. For other platforms: check your platform's documentation for how skills are loaded.
 
 # Using Skills
 
@@ -52,10 +70,10 @@ digraph skill_flow {
     "Already brainstormed?" [shape=diamond];
     "Invoke brainstorming skill" [shape=box];
     "Might any skill apply?" [shape=diamond];
-    "Invoke Skill tool" [shape=box];
+    "View the skill's SKILL.md" [shape=box];
     "Announce: 'Using [skill] to [purpose]'" [shape=box];
     "Has checklist?" [shape=diamond];
-    "Create TodoWrite todo per item" [shape=box];
+    "Create todowrite todo per item" [shape=box];
     "Follow skill exactly" [shape=box];
     "Respond (including clarifications)" [shape=doublecircle];
 
@@ -65,13 +83,13 @@ digraph skill_flow {
     "Invoke brainstorming skill" -> "Might any skill apply?";
 
     "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
+    "Might any skill apply?" -> "View the skill's SKILL.md" [label="yes, even 1%"];
     "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
-    "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
+    "View the skill's SKILL.md" -> "Announce: 'Using [skill] to [purpose]'";
     "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
-    "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
+    "Has checklist?" -> "Create todowrite todo per item" [label="yes"];
     "Has checklist?" -> "Follow skill exactly" [label="no"];
-    "Create TodoWrite todo per item" -> "Follow skill exactly";
+    "Create todowrite todo per item" -> "Follow skill exactly";
 }
 ```
 
