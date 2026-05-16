@@ -305,6 +305,8 @@ func writeSkills(b *strings.Builder, allSkills []*skills.Skill, activeSkills []*
 	for _, s := range allSkills {
 		if s.Builtin {
 			originMap[s.Name] = "builtin"
+		} else if s.Vendored {
+			originMap[s.Name] = "vendored"
 		} else {
 			originMap[s.Name] = "user"
 		}
