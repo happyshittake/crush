@@ -45,6 +45,7 @@ type Skill struct {
 	Path          string            `yaml:"-" json:"path"`
 	SkillFilePath string            `yaml:"-" json:"skill_file_path"`
 	Builtin       bool              `yaml:"-" json:"builtin"`
+	Vendored      bool              `yaml:"-" json:"vendored"`
 }
 
 // DiscoveryState represents the outcome of discovering a single skill file.
@@ -307,6 +308,8 @@ func ToPromptXML(skills []*Skill) string {
 		fmt.Fprintf(&sb, "    <location>%s</location>\n", escape(s.SkillFilePath))
 		if s.Builtin {
 			sb.WriteString("    <type>builtin</type>\n")
+		} else if s.Vendored {
+			sb.WriteString("    <type>vendored</type>\n")
 		}
 		sb.WriteString("  </skill>\n")
 	}

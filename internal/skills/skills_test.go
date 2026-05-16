@@ -358,6 +358,23 @@ func TestToPromptXMLBuiltinType(t *testing.T) {
 	require.Equal(t, 1, strings.Count(xml, "<type>builtin</type>"))
 }
 
+func TestToPromptXMLVendored(t *testing.T) {
+	t.Parallel()
+
+	input := []*Skill{
+		{Name: "builtin-skill", Description: "A builtin.", SkillFilePath: "crush://skills/builtin-skill/SKILL.md", Builtin: true},
+		{Name: "vendored-skill", Description: "A vendored skill.", SkillFilePath: "crush://superpowers/vendored-skill/SKILL.md", Vendored: true},
+		{Name: "user-skill", Description: "A user skill.", SkillFilePath: "/home/user/.config/crush/skills/user-skill/SKILL.md"},
+	}
+	xml := ToPromptXML(input)
+	require.Contains(t, xml, "<type>builtin</type>")
+	require.Contains(t, xml, "<type>vendored</type>")
+	require.Equal(t, 1, strings.Count(xml, "<type>builtin</type>"))
+	require.Equal(t, 1, strings.Count(xml, "<type>vendored</type>"))
+	// User skills should have no <type> element.
+	require.NotContains(t, xml, "/home/user/.config/crush/skills/user-skill/SKILL.md</location>\n    <type>")
+}
+
 func TestParseContent(t *testing.T) {
 	t.Parallel()
 
