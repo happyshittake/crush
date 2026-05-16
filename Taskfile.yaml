@@ -213,3 +213,11 @@ tasks:
     desc: Generate code using SQLC
     cmds:
       - sqlc generate
+
+  update-skills:
+    desc: Update vendored superpowers skills from GitHub
+    cmds:
+      - git clone --depth 1 https://github.com/obra/superpowers.git /tmp/superpowers-update
+      - rsync -r --exclude='using-superpowers' /tmp/superpowers-update/skills/ internal/skills/superpowers/
+      - rm -rf /tmp/superpowers-update
+      - echo "Superpowers skills updated. Review and commit the changes."
