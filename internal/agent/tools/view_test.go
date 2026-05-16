@@ -276,7 +276,7 @@ func TestReadBuiltinFile(t *testing.T) {
 	t.Run("reads crush-config skill", func(t *testing.T) {
 		t.Parallel()
 
-		resp, err := readBuiltinFile(ViewParams{
+		resp, err := readEmbeddedFile(ViewParams{
 			FilePath: "crush://skills/crush-config/SKILL.md",
 		}, nil)
 		require.NoError(t, err)
@@ -287,7 +287,7 @@ func TestReadBuiltinFile(t *testing.T) {
 	t.Run("not found", func(t *testing.T) {
 		t.Parallel()
 
-		resp, err := readBuiltinFile(ViewParams{
+		resp, err := readEmbeddedFile(ViewParams{
 			FilePath: "crush://skills/nonexistent/SKILL.md",
 		}, nil)
 		require.NoError(t, err)
@@ -297,7 +297,7 @@ func TestReadBuiltinFile(t *testing.T) {
 	t.Run("metadata has skill info", func(t *testing.T) {
 		t.Parallel()
 
-		resp, err := readBuiltinFile(ViewParams{
+		resp, err := readEmbeddedFile(ViewParams{
 			FilePath: "crush://skills/crush-config/SKILL.md",
 		}, nil)
 		require.NoError(t, err)
@@ -312,7 +312,7 @@ func TestReadBuiltinFile(t *testing.T) {
 	t.Run("respects offset", func(t *testing.T) {
 		t.Parallel()
 
-		resp, err := readBuiltinFile(ViewParams{
+		resp, err := readEmbeddedFile(ViewParams{
 			FilePath: "crush://skills/crush-config/SKILL.md",
 			Offset:   5,
 		}, nil)
