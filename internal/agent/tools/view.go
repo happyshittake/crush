@@ -3,7 +3,7 @@ package tools
 import (
 	"bufio"
 	"context"
-	_ "embed"
+	"embed"
 	"errors"
 	"fmt"
 	"html/template"
@@ -103,9 +103,10 @@ func NewViewTool(
 				return fantasy.NewTextErrorResponse("file_path is required"), nil
 			}
 
-			// Handle builtin skill files (crush: prefix).
-			if strings.HasPrefix(params.FilePath, skills.BuiltinPrefix) {
-				resp, err := readBuiltinFile(params, skillTracker)
+			// Handle embedded skill files (crush:// prefix).
+			if strings.HasPrefix(params.FilePath, skills.BuiltinPrefix) ||
+				strings.HasPrefix(params.FilePath, skills.SuperpowersPrefix) {
+				resp, err := readEmbeddedFile(params, skillTracker)
 				return resp, err
 			}
 
@@ -436,14 +437,26 @@ func isInSkillsPath(filePath string, skillsPaths []string) bool {
 	return false
 }
 
-// readBuiltinFile reads a file from the embedded builtin skills filesystem.
-func readBuiltinFile(params ViewParams, skillTracker *skills.Tracker) (fantasy.ToolResponse, error) {
-	embeddedPath := "builtin/" + strings.TrimPrefix(params.FilePath, skills.BuiltinPrefix)
-	builtinFS := skills.BuiltinFS()
+// readEmbeddedFile reads a file from an embedded skill filesystem (builtin or
+// superpowers). It resolves the prefix to determine which embedded FS to use.
+func readEmbeddedFile(params ViewParams, skillTracker *skills.Tracker) (fantasy.ToolResponse, error) {
+	var embeddedPath string
+	var embeddedFS embed.FS
 
-	data, err := fs.ReadFile(builtinFS, embeddedPath)
+	switch {
+	case strings.HasPrefix(params.FilePath, skills.SuperpowersPrefix):
+		embeddedPath = "superpowers/" + strings.TrimPrefix(params.FilePath, skills.SuperpowersPrefix)
+		embeddedFS = skills.SuperpowersFS()
+	case strings.HasPrefix(params.FilePath, skills.BuiltinPrefix):
+		embeddedPath = "builtin/" + strings.TrimPrefix(params.FilePath, skills.BuiltinPrefix)
+		embeddedFS = skills.BuiltinFS()
+	default:
+		return fantasy.NewTextErrorResponse(fmt.Sprintf("Unknown embedded prefix: %s", params.FilePath)), nil
+	}
+
+	data, err := fs.ReadFile(embeddedFS, embeddedPath)
 	if err != nil {
-		return fantasy.NewTextErrorResponse(fmt.Sprintf("Builtin file not found: %s", params.FilePath)), nil
+		return fantasy.NewTextErrorResponse(fmt.Sprintf("Embedded file not found: %s", params.FilePath)), nil
 	}
 
 	content := string(data)
