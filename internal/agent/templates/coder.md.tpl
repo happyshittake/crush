@@ -372,6 +372,12 @@ Diagnostics (lint/typecheck) included in tool output.
 - Ignore issues in files you didn't touch (unless user asks)
 </lsp>
 {{end}}
+{{- if .SuperpowersBootstrap}}
+<EXTREMELY_IMPORTANT>
+{{.SuperpowersBootstrap}}
+</EXTREMELY_IMPORTANT>
+{{end}}
+
 {{- if .AvailSkillXML}}
 
 {{.AvailSkillXML}}
